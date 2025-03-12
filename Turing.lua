@@ -58,8 +58,10 @@ SMODS.Joker {
         local next_state = nil
         -- note this may be nil
         local current_card = nil
+        -- tape_index in [, #G.hand.cards] means card is there, otherwise it's blank
         if tape_index > #G.hand.cards or tape_index < 1 then
           current_symbol = 'B'
+          -- todo state transition from a blank symbol == increment state?
           next_state = (state  + 1) % #G.jokers.cards + 1;
         else
           current_card = G.hand.cards[tonumber(tape_index)]
@@ -72,6 +74,7 @@ SMODS.Joker {
           end
         end
 
+        -- aces stored at 1 not 14
         if current_symbol == 14 then current_symbol = 1 end
 
         sendInfoMessage('Current Symbol: '..current_symbol)
@@ -91,7 +94,8 @@ SMODS.Joker {
         
         -- store edition of current state as we'll need to write this to a card
         local current_state_edition = G.jokers.cards[state].edition
-        -- todo does this work or do I need to check before access
+        -- ensure we have a "current card" on blank tape index by making a new one
+        -- rank is the symbol we said we would write, and suit is random
         if current_card == nil then
           local new_card_suit = nil
           new_card_suit = pseudorandom_element({'S','H','D','C'}, pseudoseed('turing'))
