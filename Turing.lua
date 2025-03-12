@@ -8,20 +8,20 @@ SMODS.Atlas {
 -- [card symbol][joker index] = 'rank to write'..'tape move direction'
 turing_state_transitions = {
   ----------|  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10 |  11 |  12 |  13 | (joker state)
-  --[[ A ]] { 'SR', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R' },
-  --[[ 2 ]] { ' L', 'SL', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L' },
-  --[[ 3 ]] { ' R', ' R', 'SR', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R' },
-  --[[ 4 ]] { ' L', ' L', ' L', 'SL', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L' },
-  --[[ 5 ]] { ' R', ' R', ' R', ' R', 'SR', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R' },
-  --[[ 6 ]] { ' L', ' L', ' L', ' L', ' L', 'SL', ' L', ' L', ' L', ' L', ' L', ' L', ' L' },
-  --[[ 7 ]] { ' R', ' R', ' R', ' R', ' R', ' R', 'SR', ' R', ' R', ' R', ' R', ' R', ' R' },
-  --[[ 8 ]] { ' L', ' L', ' L', ' L', ' L', ' L', ' L', 'SL', ' L', ' L', ' L', ' L', ' L' },
-  --[[ 9 ]] { ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', 'SR', ' R', ' R', ' R', ' R' },
-  --[[ T ]] { ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', 'SL', ' L', ' L', ' L' },
-  --[[ J ]] { ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', 'SR', ' R', ' R' },
-  --[[ Q ]] { ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', ' L', 'SL', ' L' },
-  --[[ K ]] { ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', ' R', 'SR' },
-  --[[ B ]] { 'AR', 'KR', 'QL', 'JR', 'TL', '9R', '8L', '7R', '6L', '5R', '4L', '3R', '2L' },
+  --[[ A ]] { 'SR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR' },
+  --[[ 2 ]] { '2L', 'SL', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L' },
+  --[[ 3 ]] { '3R', '3R', 'SR', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R' },
+  --[[ 4 ]] { '4L', '4L', '4L', 'SL', '4L', '4L', '4L', '4L', '4L', '4L', '4L', '4L', '4L' },
+  --[[ 5 ]] { '5R', '5R', '5R', '5R', 'SR', '5R', '5R', '5R', '5R', '5R', '5R', '5R', '5R' },
+  --[[ 6 ]] { '6L', '6L', '6L', '6L', '6L', 'SL', '6L', '6L', '6L', '6L', '6L', '6L', '6L' },
+  --[[ 7 ]] { '7R', '7R', '7R', '7R', '7R', '7R', 'SR', '7R', '7R', '7R', '7R', '7R', '7R' },
+  --[[ 8 ]] { '8L', '8L', '8L', '8L', '8L', '8L', '8L', 'SL', '8L', '8L', '8L', '8L', '8L' },
+  --[[ 9 ]] { '9R', '9R', '9R', '9R', '9R', '9R', '9R', '9R', 'SR', '9R', '9R', '9R', '9R' },
+  --[[ T ]] { 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'SL', 'TL', 'TL', 'TL' },
+  --[[ J ]] { 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'SR', 'JR', 'JR' },
+  --[[ Q ]] { 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'SL', 'QL' },
+  --[[ K ]] { 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'SR' },
+B=--[[ B ]] { 'AR', 'KR', 'QL', 'JR', 'TL', '9R', '8L', '7R', '6L', '5R', '4L', '3R', '2L' },
 }
 
 
@@ -46,28 +46,48 @@ SMODS.Joker {
     if context.before then
       local state = 1 -- todo read from G.jokers.cards
       local tape_index = 1
+
+      local iterations = 1
       
       while state ~= nil do
+        sendInfoMessage('Number of Steps: '..iterations)
+        sendInfoMessage('Current State: '..state)
+        sendInfoMessage('Tape Index: '..tape_index)
         -- get current symbol and next state
         local current_symbol = nil
         local next_state = nil
         -- note this may be nil
-        local current_card = G.hand.cards[tape_index]
-        if tape_index > #G.hands.cards then
+        local current_card = nil
+        if tape_index > #G.hand.cards or tape_index < 1 then
           current_symbol = 'B'
-          next_state = current_symbol %#G.jokers.cards + 1
+          next_state = (state  + 1) % #G.jokers.cards + 1;
         else
+          current_card = G.hand.cards[tonumber(tape_index)]
           current_symbol = current_card:get_id()
           next_state = current_symbol % #G.jokers.cards + 1;
           -- terminate on a stone card
-          if current_card.ability.effect ~= 'Stone Card'
+          if current_card.ability.effect == 'Stone Card' then
             next_state = nil
             break
           end
         end
+
+        if current_symbol == 14 then current_symbol = 1 end
+
+        sendInfoMessage('Current Symbol: '..current_symbol)
+        sendInfoMessage('Next State: '..next_state)
+
         -- given current symbol, read the write value and the tape direction
-        local write_symbol = sub(turing_state_transitions[current_symbol][state], 1, 2)
-        local tape_direction = sub(turing_state_transitions[current_symbol][state], 2)
+        local write_symbol = string.sub(turing_state_transitions[current_symbol][state], 1, 1)
+        local tape_direction_string = string.sub(turing_state_transitions[current_symbol][state], 2)
+        local tape_direction = 1
+        if tape_direction_string == 'L' then
+          tape_direction = -1
+        end
+
+        sendInfoMessage('Writing Symbol: '..write_symbol)
+        sendInfoMessage('Current State: '..state)
+        sendInfoMessage('Next State: '..next_state)
         
         -- store edition of current state as we'll need to write this to a card
         local current_state_edition = G.jokers.cards[state].edition
@@ -89,6 +109,7 @@ SMODS.Joker {
         -- update variables for the next iteration
         state = next_state
         tape_index = tape_index + tape_direction
+        iterations = iterations + 1
 
         -- add the edition to the existing/new card if needed
         G.E_MANAGER:add_event(Event({
