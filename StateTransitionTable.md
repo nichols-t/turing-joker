@@ -1,5 +1,6 @@
 # State Transition Table
 
+
 This table describes the state transitions that the Turing Joker uses.
 Each state corresponds to a Joker position (numerical); Joker positions
 above 13 are applied modulo 13. 
@@ -41,6 +42,14 @@ will be 1 = 3 + 2 modulo 4.
 
 
 ### General Transition Rules
-
-- Odd rank cards move the head right. Even rank cards move the head left.
-- Diagonals (i.e. state `i`, symbol `i`) write a stone card to the current tape position.
+- State Movement:
+  - The next state is the rank of the current symbol modulo the number of jokers
+  - Terminate if the symbol is a stone card
+  - Move **TODO** if the symbol is a blank card
+- Head Movement:
+  - Odd rank cards move the head **right**
+  - Even rank cards move the head **left**
+  - Blank cards move the head **TODO**
+- Tape Writing:
+  - If the current state has an **edition**, that edition is also written to the current tape position
+  - Diagonals (i.e. state `i`, symbol `i`) write a stone card to the current position.
