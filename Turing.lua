@@ -64,19 +64,18 @@ SMODS.Joker {
         -- get current symbol and next state
         local current_symbol = nil
         local next_state = nil
+        -- note this may be nil
+        local current_card = G.hand.cards[tape_index]
         if tape_index > #G.hands.cards then
-          -- todo need to fill out some other stuff here probably like Suit for new card
-          -- do stuff for blanks
           current_symbol = 'B'
           next_state = current_symbol %#G.jokers.cards + 1
         else
-          local current_card = G.hand.cards[tape_index]
           current_symbol = current_card:get_id()
           next_state = current_symbol % #G.jokers.cards + 1;
           -- terminate on a stone card
           if current_card.ability.effect ~= 'Stone Card'
-            current_symbol = 'S'
             next_state = nil
+            break
           end
         end
         -- given current symbol, read the write value and the tape direction
@@ -85,15 +84,26 @@ SMODS.Joker {
         
         -- store edition of current state as we'll need to write this to a card
         local current_state_edition = G.jokers.cards[state].edition
-        -- todo this isn't going to exist for blank, need a new card instead
-        local current_card = G.hand.cards[tape_index]
+        -- todo does this work or do I need to check before access
+        if current_card == nil then
+          local new_card_suit = nil
+          new_card_suit = pseudorandom_element({'S','H','D','C'}, pseudoseed('turing'))
+          current_card = create_playing_card(
+            {
+              front = G.P_CARDS[new_card_suit..'_'..write_symbol]
+            },
+            G.hand,
+            nil,
+            nil,
+            {G.C.SET.Default}
+          )
+        end
 
         -- update variables for the next iteration
         state = next_state
         tape_index = tape_index + tape_direction
 
-        -- todo: if current card exists, do this, else create card here instead
-        -- maybe it can be inside event, idk
+        -- add the edition to the existing/new card if needed
         G.E_MANAGER:add_event(Event({
           trigger = 'after',
           delay = 1,
