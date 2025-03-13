@@ -21,16 +21,13 @@ turing_state_transitions = {
   --[[ J ]] { 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'SR', 'JR', 'JR' },
   --[[ Q ]] { 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'SL', 'QL' },
   --[[ K ]] { 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'SR' },
-B=--[[ B ]] { 'AR', 'KR', 'QL', 'JR', 'TL', '9R', '8L', '7R', '6L', '5R', '4L', '3R', '2L' },
+B=--[[ B ]] { 'A_', 'K_', 'Q_', 'J_', 'T_', '9_', '8_', '7_', '6_', '5_', '4_', '3_', '2_' },
 }
 
 function turing_step(state, tape_index, iterations)
   if state == nil then
     return nil
   end
-  sendInfoMessage('Number of Steps: '..iterations)
-  sendInfoMessage('Current State: '..state)
-  sendInfoMessage('Tape Index: '..tape_index)
   -- get current symbol and next state
   local current_symbol = nil
   local next_state = nil
@@ -41,35 +38,31 @@ function turing_step(state, tape_index, iterations)
     current_symbol = 'B'
     -- todo state transition from a blank symbol == increment state?
     -- todo testing: blank sends to state end? keep getting loops
-    next_state = #G.jokers.cards;
+    next_state = ((state + 1) % #G.jokers.cards) + 1
   else
     current_card = G.hand.cards[tonumber(tape_index)]
     current_symbol = current_card:get_id()
+    if current_symbol == 14 then current_symbol = 1 end
     next_state = (current_symbol % #G.jokers.cards) + 1;
     -- terminate on a stone card
     if current_card.ability.effect == 'Stone Card' then
-      return true
+      return nil
     end
   end
-
+  
   -- aces stored at 1 not 14
-  if current_symbol == 14 then current_symbol = 1 end
-
-  sendInfoMessage('Current Symbol: '..current_symbol)
-  sendInfoMessage('Next State: '..next_state)
-
+  
+  
   -- given current symbol, read the write value and the tape direction
   local write_symbol = string.sub(turing_state_transitions[current_symbol][state], 1, 1)
   local tape_direction_string = string.sub(turing_state_transitions[current_symbol][state], 2)
-  local tape_direction = 1
+  local tape_direction = 0
   if tape_direction_string == 'L' then
     tape_direction = -1
+  elseif tape_direction_string == 'R' then
+    tape_direction = 1
   end
-
-  sendInfoMessage('Writing Symbol: '..write_symbol)
-  sendInfoMessage('Current State: '..state)
-  sendInfoMessage('Next State: '..next_state)
-  
+    
   -- store edition of current state as we'll need to write this to a card
   local current_state_edition = G.jokers.cards[state].edition
   -- ensure we have a "current card" on blank tape index by making a new one
@@ -81,22 +74,23 @@ function turing_step(state, tape_index, iterations)
       {
         front = G.P_CARDS[new_card_suit..'_'..write_symbol]
       },
-      G.hand,
+      nil, -- G.hand,
       nil,
       nil,
       {G.C.SET.Default}
     )
+    G.hand:emplace(current_card, tape_index, false)
   end
 
   local next_tape_index = tape_index + tape_direction;
-  sendInfoMessage("CT: "..tape_index.." NT: "..next_tape_index)
-  -- update variables for the next iteration
-  -- state = next_state
-  -- tape_index = tape_index + tape_direction
-  -- iterations = iterations + 1
+  local log = "i: "..iterations
+  log = log.." T_i: "..tape_index.." T_i+1: "..next_tape_index
+  log = log.." Q_i: "..state.." Q_i+1: "..next_state
+  log = log.." S_i: "..current_symbol.." S_w: "..write_symbol
+  sendInfoMessage(log)
 
   -- add the edition to the existing/new card if needed
-  G.E_MANAGER:add_event(Event({
+  e = Event({
     func = function()
       -- can happen on stone I think?
       if current_card.base.suit ~= nil then
@@ -114,7 +108,8 @@ function turing_step(state, tape_index, iterations)
       turing_step(next_state, next_tape_index, iterations + 1)
       return true
     end
-  }))
+  })
+  G.E_MANAGER:add_event(e)
 end
 
 
