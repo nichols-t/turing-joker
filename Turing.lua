@@ -8,19 +8,19 @@ SMODS.Atlas {
 -- [card symbol][joker index] = 'rank to write'..'tape move direction'
 turing_state_transitions = {
   ----------|  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10 |  11 |  12 |  13 | (joker state)
-  --[[ A ]] { 'SR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR', 'AR' },
-  --[[ 2 ]] { '2L', 'SL', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L', '2L' },
-  --[[ 3 ]] { '3R', '3R', 'SR', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R', '3R' },
-  --[[ 4 ]] { '4L', '4L', '4L', 'SL', '4L', '4L', '4L', '4L', '4L', '4L', '4L', '4L', '4L' },
-  --[[ 5 ]] { '5R', '5R', '5R', '5R', 'SR', '5R', '5R', '5R', '5R', '5R', '5R', '5R', '5R' },
-  --[[ 6 ]] { '6L', '6L', '6L', '6L', '6L', 'SL', '6L', '6L', '6L', '6L', '6L', '6L', '6L' },
-  --[[ 7 ]] { '7R', '7R', '7R', '7R', '7R', '7R', 'SR', '7R', '7R', '7R', '7R', '7R', '7R' },
-  --[[ 8 ]] { '8L', '8L', '8L', '8L', '8L', '8L', '8L', 'SL', '8L', '8L', '8L', '8L', '8L' },
-  --[[ 9 ]] { '9R', '9R', '9R', '9R', '9R', '9R', '9R', '9R', 'SR', '9R', '9R', '9R', '9R' },
-  --[[ T ]] { 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'TL', 'SL', 'TL', 'TL', 'TL' },
-  --[[ J ]] { 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'JR', 'SR', 'JR', 'JR' },
-  --[[ Q ]] { 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'QL', 'SL', 'QL' },
-  --[[ K ]] { 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'KR', 'SR' },
+  --[[ A ]] { 'SR', '3R', '4R', '5R', '6R', '7R', '8R', '9R', 'TR', 'JR', 'QR', 'KR', 'AR' },
+  --[[ 2 ]] { '3L', 'SL', '5L', '6L', '7L', '8L', '9L', 'TL', 'JL', 'QL', 'KL', 'AL', '2L' },
+  --[[ 3 ]] { '4R', '5R', 'SR', '7R', '8R', '9R', 'TR', 'JR', 'QR', 'KR', 'AR', '2R', '3R' },
+  --[[ 4 ]] { '5L', '6L', '7L', 'SL', '9L', 'TL', 'JL', 'QL', 'KL', 'AL', '2L', '3L', '4L' },
+  --[[ 5 ]] { '6R', '7R', '8R', '9R', 'SR', 'JR', 'QR', 'KR', 'AR', '2R', '3R', '4R', '5R' },
+  --[[ 6 ]] { '7L', '8L', '9L', 'TL', 'JL', 'SL', 'KL', 'AL', '2L', '3L', '4L', '5L', '6L' },
+  --[[ 7 ]] { '8R', '9R', 'TR', 'JR', 'QR', 'KR', 'SR', '2R', '3R', '4R', '5R', '6R', '7R' },
+  --[[ 8 ]] { '9L', 'TL', 'JL', 'QL', 'KL', 'AL', '2L', 'SL', '4L', '5L', '6L', '7L', '8L' },
+  --[[ 9 ]] { 'TR', 'JR', 'QR', 'KR', 'AR', '2R', '3R', '4R', 'SR', '6R', '7R', '8R', '9R' },
+  --[[ T ]] { 'JL', 'QL', 'KL', 'AL', '2L', '3L', '4L', '5L', '6L', 'SL', '8L', '9L', 'TL' },
+  --[[ J ]] { 'QR', 'KR', 'AR', '2R', '3R', '4R', '5R', '6R', '7R', '8R', 'SR', 'TR', 'JR' },
+  --[[ Q ]] { 'KL', 'AL', '2L', '3L', '4L', '5L', '6L', '7L', '8L', '9L', 'TL', 'SL', 'QL' },
+  --[[ K ]] { 'AR', '2R', '3R', '4R', '5R', '6R', '7R', '8R', '9R', 'TR', 'JR', 'QR', 'SR' },
 B=--[[ B ]] { 'A_', 'K_', 'Q_', 'J_', 'T_', '9_', '8_', '7_', '6_', '5_', '4_', '3_', '2_' },
 }
 
@@ -38,7 +38,7 @@ function turing_step(state, tape_index, iterations)
     current_symbol = 'B'
     -- todo state transition from a blank symbol == increment state?
     -- todo testing: blank sends to state end? keep getting loops
-    next_state = ((state + 1) % #G.jokers.cards) + 1
+    next_state = ((state) % #G.jokers.cards) + 1
   else
     current_card = G.hand.cards[tonumber(tape_index)]
     current_symbol = current_card:get_id()

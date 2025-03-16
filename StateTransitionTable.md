@@ -8,6 +8,8 @@ above 13 are applied modulo 13.
 Each row represents the Symbol on the tape. These symbols correspond to
 card ranks and the blank symbol (which represents writing a new card).
 
+# TODO THIS IS OUT OF DATE. SEE THE CODE FOR LATEST VERSION
+
 | Symbol |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |  10   |  11   |  12   |  13   |
 | ------ | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 |      A |W+S,M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|    M_R|
