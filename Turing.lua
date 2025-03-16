@@ -24,6 +24,10 @@ turing_state_transitions = {
 B=--[[ B ]] { 'S_', 'A_', 'K_', 'Q_', 'S_', 'J_', 'T_', '9_', 'S_', '8_', '7_', '6_', 'S_' },
 }
 
+function add_to_front_of_hand(current_card)
+  G.hand:emplace(current_card, 'front', false)
+end
+
 function turing_step(state, tape_index, iterations)
   if state == nil then
     return nil
@@ -79,12 +83,15 @@ function turing_step(state, tape_index, iterations)
       nil,
       {G.C.SET.Default}
     )
-    -- todo this doesn't put left cards on the right spot, seems to always add right-
-    -- can probably change the state machine to just not do that?
-    G.hand:emplace(current_card, tape_index, false)
+    if (tape_index < 1) then
+      add_to_front_of_hand(current_card)
+    else
+      G.hand:emplace(current_card, tape_index, false)
+    end
   end
 
   local next_tape_index = tape_index + tape_direction;
+  if next_tape_index < 1 then next_tape_index = 1 end
   local log = "i: "..iterations
   log = log.." T_i: "..tape_index.." T_i+1: "..next_tape_index
   log = log.." Q_i: "..state.." Q_i+1: "..next_state
