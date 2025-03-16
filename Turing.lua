@@ -21,7 +21,7 @@ turing_state_transitions = {
   --[[ J ]] { 'QR', 'KR', 'AR', '2R', '3R', '4R', '5R', '6R', '7R', '8R', 'SR', 'TR', 'JR' },
   --[[ Q ]] { 'KL', 'AL', '2L', '3L', '4L', '5L', '6L', '7L', '8L', '9L', 'TL', 'SL', 'QL' },
   --[[ K ]] { 'AR', '2R', '3R', '4R', '5R', '6R', '7R', '8R', '9R', 'TR', 'JR', 'QR', 'SR' },
-B=--[[ B ]] { 'A_', 'K_', 'Q_', 'J_', 'T_', '9_', '8_', '7_', '6_', '5_', '4_', '3_', '2_' },
+B=--[[ B ]] { 'S_', 'A_', 'K_', 'Q_', 'S_', 'J_', 'T_', '9_', 'S_', '8_', '7_', '6_', 'S_' },
 }
 
 function turing_step(state, tape_index, iterations)
