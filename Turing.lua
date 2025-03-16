@@ -79,6 +79,8 @@ function turing_step(state, tape_index, iterations)
       nil,
       {G.C.SET.Default}
     )
+    -- todo this doesn't put left cards on the right spot, seems to always add right-
+    -- can probably change the state machine to just not do that?
     G.hand:emplace(current_card, tape_index, false)
   end
 
@@ -122,12 +124,10 @@ SMODS.Joker {
       "based on Joker editions."
     }
   },
-  config = {
-    delta = turing_state_transitions
-  },
-  rarity = 3,
+  rarity = 4,
   atlas = "Turing",
   pos = { x= 0, y = 0 },
+  soul_pos = { x=1, y=0 },
   cost = 11,
   -- Scoring calculation
   calculate = function(self, card, context)
